@@ -1,7 +1,7 @@
 package com.campusos.auth_service.entity;
 
-import com.campusos.common_lib.entity.BaseEntity;
 import com.campusos.auth_service.enums.RoleType;
+import com.campusos.common_lib.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,29 +21,32 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 190)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150)
     private String fullName;
 
-    @Column(length = 15)
+    @Column(length = 20)
     private String phone;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @Column(nullable = false)
     private UUID schoolId;
 
     private UUID teacherId;
 
+    private UUID parentId;
+
+    @Builder.Default
     private Boolean enabled = true;
 
+    @Builder.Default
     private Boolean accountLocked = false;
 
     private LocalDateTime lastLoginAt;

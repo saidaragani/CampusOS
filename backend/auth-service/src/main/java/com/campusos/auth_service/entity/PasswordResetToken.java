@@ -8,37 +8,39 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "refresh_tokens")
+@Table(name = "password_reset_tokens")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RefreshToken extends BaseEntity {
+public class PasswordResetToken extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 255)
-    private String token;
-
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
-    private LocalDateTime expiryDate;
+    @Column(nullable = false, unique = true, length = 255)
+    private String tokenHash;
 
-    @Builder.Default
     @Column(nullable = false)
-    private Boolean revoked = false;
+    private LocalDateTime expiresAt;
+
+    private LocalDateTime usedAt;
 
     public boolean isExpired() {
-        return expiryDate.isBefore(LocalDateTime.now());
+        return expiresAt.isBefore(LocalDateTime.now());
+    }
+
+    public boolean isUsed() {
+        return usedAt != null;
     }
 
     public boolean isValid() {
-        return !Boolean.TRUE.equals(revoked) && !isExpired();
+        return !isExpired() && !isUsed();
     }
 }

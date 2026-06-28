@@ -22,6 +22,9 @@ public class JwtService {
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpiration;
 
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenExpiration;
+
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
@@ -31,20 +34,27 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
 
         claims.put("userId", userPrincipal.getUserId());
-        claims.put("tenantId", userPrincipal.getTenantId());
-        claims.put(
-                "roles",
-                userPrincipal.getAuthorities()
-                        .stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .toList()
-        );
+
+        claims.put("schoolId", userPrincipal.getSchoolId());
+
+        claims.put("fullName", userPrincipal.getUser().getFullName());
+
+        claims.put("role", userPrincipal.getUser().getRole().getName().name());
 
         return Jwts.builder()
                 .claims(claims)
                 .subject(userPrincipal.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshToken(UserPrincipal userPrincipal) {
+        return Jwts.builder()
+                .subject(userPrincipal.getUsername())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -80,18 +90,14 @@ public class JwtService {
         );
     }
 
-    public UUID extractTenantId(String token) {
+    public UUID extractSchoolId(String token) {
         return UUID.fromString(
-                extractClaims(token).get("tenantId", String.class)
+                extractClaims(token).get("schoolId", String.class)
         );
     }
 
     public String extractDisplayName(String token) {
-        return extractClaims(token).get("username", String.class);
+        return extractClaims(token).get("fullName", String.class);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<String> extractRoles(String token) {
-        return (List<String>) extractClaims(token).get("roles");
-    }
 }

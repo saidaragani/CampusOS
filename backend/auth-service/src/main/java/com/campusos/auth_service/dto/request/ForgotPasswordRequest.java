@@ -3,11 +3,8 @@ package com.campusos.auth_service.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record LoginRequest(
-    @NotBlank
+public record ForgotPasswordRequest(
     @Email
-    String email,
-
     @NotBlank
-    String password
+    String email
 ) {}

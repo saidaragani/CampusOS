@@ -8,8 +8,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Getter
 @RequiredArgsConstructor
@@ -19,10 +19,9 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toSet());
+        return List.of(
+                new SimpleGrantedAuthority(user.getRole().getName().name())
+        );
     }
 
     @Override
@@ -39,8 +38,12 @@ public class UserPrincipal implements UserDetails {
         return user.getId();
     }
 
-    public UUID getTenantId() {
-        return user.getTenantId();
+    public UUID getSchoolId() {
+        return user.getSchoolId();
+    }
+
+    public User getUser() {
+        return user;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !user.isAccountLocked();
+        return !Boolean.TRUE.equals(user.getAccountLocked());
     }
 
     @Override
@@ -60,6 +63,6 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.isEnabled();
+        return Boolean.TRUE.equals(user.getEnabled());
     }
 }

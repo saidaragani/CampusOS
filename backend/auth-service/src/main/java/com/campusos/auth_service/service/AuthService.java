@@ -1,17 +1,19 @@
 package com.campusos.auth_service.service;
 
-import com.campusos.auth_service.dto.request.LoginRequest;
-import com.campusos.auth_service.dto.request.RefreshTokenRequest;
-import com.campusos.auth_service.dto.request.RegisterRequest;
+import com.campusos.auth_service.dto.request.*;
 import com.campusos.auth_service.dto.response.AuthResponse;
+import com.campusos.auth_service.dto.response.UserSummaryDto;
+
+import java.util.List;
 
 public interface AuthService {
-
-    AuthResponse register(RegisterRequest request);
-
+    void signUpParent(ParentSignUpRequest request);
     AuthResponse login(LoginRequest request);
-
-    AuthResponse refreshToken(RefreshTokenRequest request);
-
-    void logout(String email);
+    void forgotPassword(ForgotPasswordRequest request);
+    void resetPassword(ResetPasswordRequest request);
+    void changePassword(ChangePasswordRequest request, String userEmail);
+    UserSummaryDto getCurrentUser(String userEmail);
+    
+    void linkChild(LinkChildRequest request, String userEmail);
+    List<ChildDto> getChildren(String userEmail);
 }

@@ -1,22 +1,13 @@
 package com.campusos.auth_service.dto.response;
 
-import lombok.*;
-
-import java.util.Set;
+import com.campusos.auth_service.enums.RoleType;
 import java.util.UUID;
 
-@Getter // Generates getters
-@Setter // Generates setters
-@NoArgsConstructor // No-args constructor
-@AllArgsConstructor // All-args constructor
-@Builder // Builder Pattern
-public class UserResponse {
-
-    private UUID id;
-
-    private String username;
-
-    private String email;
-
-    private Set<String> roles;
-}
+public record UserResponse(
+    UUID id,
+    UUID schoolId,
+    String fullName,
+    String email,
+    String phone,
+    RoleType role
+) {}
