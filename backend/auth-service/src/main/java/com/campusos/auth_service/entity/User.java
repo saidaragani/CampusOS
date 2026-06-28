@@ -1,29 +1,25 @@
 package com.campusos.auth_service.entity;
 
 import com.campusos.common_lib.entity.BaseEntity;
+import com.campusos.auth_service.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user_accounts")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @Column(nullable = false)
-    private String username;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -32,28 +28,27 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(nullable = false)
-    private UUID tenantId;
+    private String fullName;
+
+    @Column(length = 15)
+    private String phone;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     @Column(nullable = false)
-    @Builder.Default
-    private boolean enabled = true;
+    private UUID schoolId;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean accountLocked = false;
+    private UUID teacherId;
 
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Boolean enabled = true;
 
-    @Builder.Default
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private Boolean accountLocked = false;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    @Builder.Default
-    private Set<Role> roles = new HashSet<>();
+    private LocalDateTime lastLoginAt;
+
+    public RoleType getRoleType() {
+        return role.getName();
+    }
 }

@@ -19,8 +19,8 @@
         <module name="academic-service" />
         <module name="calender-service" />
         <module name="api-gateway" />
-        <module name="user-service" />
         <module name="common-lib" />
+        <module name="user-service" />
         <module name="message-service" />
         <module name="school-service" />
         <module name="service-registry" />

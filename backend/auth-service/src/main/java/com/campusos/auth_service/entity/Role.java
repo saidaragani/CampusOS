@@ -19,7 +19,7 @@ public class Role extends BaseEntity {
     private long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private RoleType name;
 
     @Column(length = 255)
