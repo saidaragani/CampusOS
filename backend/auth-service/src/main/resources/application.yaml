@@ -1,3 +1,33 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: auth-service
+
+  config:
+    import: optional:configserver:http://localhost:8888
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/auth_db
+    username: root
+    password: prabhas
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
+
+    properties:
+      hibernate:
+        format_sql: true
+jwt:
+  secret: 4C6F6E675365637265744B6579466F7243616D7075734F53323032364A5754546F6B656E536563726574
+  access-token-expiration: 3600000
+  refresh-token-expiration: 604800000
+  
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

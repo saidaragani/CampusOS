@@ -2,6 +2,11 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+      </profile>
       <profile name="Annotation profile for backend" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -12,10 +17,12 @@
         <module name="config-server" />
         <module name="auth-service" />
         <module name="academic-service" />
-        <module name="attendance-service" />
+        <module name="calender-service" />
         <module name="api-gateway" />
         <module name="user-service" />
-        <module name="notification-service" />
+        <module name="common-lib" />
+        <module name="message-service" />
+        <module name="school-service" />
         <module name="service-registry" />
         <module name="fee-service" />
       </profile>
@@ -28,12 +35,14 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="academic-service" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
-      <module name="attendance-service" options="-parameters" />
       <module name="auth-service" options="-parameters" />
+      <module name="calender-service" options="-parameters" />
+      <module name="common-lib" options="-parameters" />
       <module name="config-server" options="-parameters" />
       <module name="configserver" options="-parameters" />
       <module name="fee-service" options="-parameters" />
-      <module name="notification-service" options="-parameters" />
+      <module name="message-service" options="-parameters" />
+      <module name="school-service" options="-parameters" />
       <module name="service-registry" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>

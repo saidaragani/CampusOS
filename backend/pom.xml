@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xsi:schemaLocation="https://maven.apache.org/POM/4.0.0
          https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
@@ -16,11 +16,13 @@
         <module>service-registry</module>
         <module>api-gateway</module>
         <module>auth-service</module>
+        <module>school-service</module>
         <module>user-service</module>
         <module>academic-service</module>
-        <module>attendance-service</module>
+        <module>calender-service</module>
         <module>fee-service</module>
-        <module>notification-service</module>
+        <module>message-service</module>
+        <module>common-lib</module>
     </modules>
 
 </project>
