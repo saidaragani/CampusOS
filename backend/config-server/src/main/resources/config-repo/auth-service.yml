@@ -1,0 +1,36 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/auth_db?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:prabhas}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# RS256 — auth signs with the private key; gateway verifies with the public key.
+# In prod, mount real keys and override these locations (e.g. file:/run/secrets/...).
+jwt:
+  private-key-location: ${JWT_PRIVATE_KEY_LOCATION:classpath:keys/private_key.pem}
+  public-key-location: ${JWT_PUBLIC_KEY_LOCATION:classpath:keys/public_key.pem}
+  access-token-expiration: 3600000
+  refresh-token-expiration: 604800000
+
+app:
+  # Swagger "Try it out" routes through the gateway (token validated + X-Auth-* headers injected).
+  gateway-url: ${GATEWAY_URL:http://localhost:8080}
+  # When true, createSchoolAdmin verifies the school via school-service (reject if missing/down).
+  validate-school: false
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}

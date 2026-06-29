@@ -1,31 +1,7 @@
-server:
-  port: 8087
-
+# Bootstrap only. All real config is served by the config-server (port 8888)
+# from config-repo/school-service.yml. Start the config-server FIRST.
 spring:
   application:
     name: school-service
-
   config:
     import: optional:configserver:http://localhost:8888
-
-  datasource:
-    url: jdbc:mysql://localhost:3306/school_db?createDatabaseIfNotExist=true
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:prabhas}
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-
-app:
-  storage:
-    base-dir: ${FILE_STORAGE_DIR:./uploads}
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka

@@ -1,35 +1,7 @@
-server:
-  port: 8086
-
+# Bootstrap only. All real config is served by the config-server (port 8888)
+# from config-repo/message-service.yml. Start the config-server FIRST.
 spring:
-  # Registered as "message-service" — other services' Feign clients resolve this name.
   application:
     name: message-service
-
   config:
     import: optional:configserver:http://localhost:8888
-
-  datasource:
-    url: jdbc:mysql://localhost:3306/messaging_db?createDatabaseIfNotExist=true
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:prabhas}
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-
-# Scheduled scans. Disable with app.scheduling.enabled=false.
-app:
-  scheduling:
-    enabled: ${SCHEDULING_ENABLED:true}
-    birthday-cron: ${BIRTHDAY_CRON:0 0 7 * * *}
-    festival-cron: ${FESTIVAL_CRON:0 30 7 * * *}
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka

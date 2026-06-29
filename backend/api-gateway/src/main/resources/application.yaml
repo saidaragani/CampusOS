@@ -1,52 +1,7 @@
-server:
-  port: 8080
-
+# Bootstrap only. All real config is served by the config-server (port 8888)
+# from config-repo/api-gateway.yml. Start the config-server FIRST.
 spring:
   application:
     name: api-gateway
-  cloud:
-    gateway:
-      server:
-        webmvc:
-          routes:
-            - id: auth-service
-              uri: lb://auth-service
-              predicates:
-                - Path=/api/auth/**
-
-            - id: school-service
-              uri: lb://school-service
-              predicates:
-                - Path=/api/schools/**,/api/classes/**,/api/teachers/**,/api/students/**,/api/files/**
-
-            - id: academic-service
-              uri: lb://academic-service
-              predicates:
-                - Path=/api/attendance/**,/api/ratings/**,/api/timetable/**,/api/leaves/**,/api/class-updates/**
-
-            - id: calendar-service
-              uri: lb://calendar-service
-              predicates:
-                - Path=/api/holidays/**,/api/events/**,/api/gallery/**,/api/announcements/**
-
-            - id: fee-service
-              uri: lb://fee-service
-              predicates:
-                - Path=/api/fees/**
-
-            - id: message-service
-              uri: lb://message-service
-              predicates:
-                - Path=/api/notifications/**
-
-# RS256 — gateway VERIFIES tokens with the public key (auth-service signs with the private key).
-jwt:
-  public-key-location: ${JWT_PUBLIC_KEY_LOCATION:classpath:keys/public_key.pem}
-
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
-
-# Note: /api/internal/** is intentionally NOT routed here — internal endpoints are
-# reachable only service-to-service, never from the public edge.
+  config:
+    import: optional:configserver:http://localhost:8888

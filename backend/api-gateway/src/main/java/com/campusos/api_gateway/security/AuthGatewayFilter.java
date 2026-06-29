@@ -26,7 +26,7 @@ import java.util.Map;
  * ({@link AuthHeaders}) downstream and strips any client-supplied copies.
  * Public endpoints pass through without a token.
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @Component
 public class AuthGatewayFilter extends OncePerRequestFilter {
 
@@ -54,6 +54,12 @@ public class AuthGatewayFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
+        // CORS preflight carries no token; let the CorsFilter handle it.
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (isPublic(request.getRequestURI())) {
             filterChain.doFilter(stripIdentityHeaders(request), response);

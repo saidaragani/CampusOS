@@ -1,0 +1,36 @@
+server:
+  port: 8085
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/fee_db?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:prabhas}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  cloud:
+    openfeign:
+      client:
+        config:
+          # Fail fast on a slow message-service so fee actions never stall.
+          message-service:
+            connect-timeout: 2000
+            read-timeout: 3000
+
+app:
+  gateway-url: ${GATEWAY_URL:http://localhost:8080}
+  # Fee reminder scan (cron). Default: 8 AM daily. Set enabled=false to disable.
+  fee:
+    reminders:
+      enabled: ${FEE_REMINDERS_ENABLED:true}
+      cron: ${FEE_REMINDERS_CRON:0 0 8 * * *}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
