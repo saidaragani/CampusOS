@@ -8,7 +8,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -22,14 +21,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Single JWT-validation point for the whole platform. Validates the access token
- * at the edge, then forwards trusted identity headers ({@link AuthHeaders}) to the
- * downstream service so services don't each re-validate. Public endpoints pass
- * through without a token (with any client-supplied identity headers stripped).
+ * Single JWT-validation point for the platform (servlet / WebMVC gateway).
+ * Validates the RS256 access token, then forwards trusted identity headers
+ * ({@link AuthHeaders}) downstream and strips any client-supplied copies.
+ * Public endpoints pass through without a token.
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
-@RequiredArgsConstructor
 public class AuthGatewayFilter extends OncePerRequestFilter {
 
     private static final List<String> PUBLIC_PATHS = List.of(
@@ -39,19 +37,24 @@ public class AuthGatewayFilter extends OncePerRequestFilter {
             "/api/auth/forgot-password",
             "/api/auth/reset-password",
             "/actuator/health",
-            "/actuator/info"
+            "/actuator/info",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final JwtService jwtService;
 
+    public AuthGatewayFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Public endpoints: forward, but never trust client-supplied identity headers.
         if (isPublic(request.getRequestURI())) {
             filterChain.doFilter(stripIdentityHeaders(request), response);
             return;
@@ -102,7 +105,6 @@ public class AuthGatewayFilter extends OncePerRequestFilter {
     private void unauthorized(HttpServletResponse response, String message) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(response.getOutputStream(),
-                Map.of("success", false, "message", message));
+        objectMapper.writeValue(response.getOutputStream(), Map.of("success", false, "message", message));
     }
 }
