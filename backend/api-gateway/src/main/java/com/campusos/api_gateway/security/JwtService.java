@@ -1,6 +1,5 @@
 package com.campusos.api_gateway.security;
 
-import com.campusos.common_lib.security.RsaKeys;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
