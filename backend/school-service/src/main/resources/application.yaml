@@ -3,25 +3,28 @@ server:
 
 spring:
   application:
-    name: tenant-service
+    name: school-service
 
   config:
     import: optional:configserver:http://localhost:8888
 
   datasource:
-    url: jdbc:mysql://localhost:3306/auth_db
-    username: root
-    password: prabhas
+    url: jdbc:mysql://localhost:3306/school_db?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:prabhas}
 
   jpa:
     hibernate:
       ddl-auto: update
-
     show-sql: true
-
     properties:
       hibernate:
         format_sql: true
+
+app:
+  storage:
+    base-dir: ${FILE_STORAGE_DIR:./uploads}
+
 eureka:
   client:
     service-url:

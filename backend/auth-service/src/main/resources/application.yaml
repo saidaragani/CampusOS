@@ -23,10 +23,24 @@ spring:
       hibernate:
         format_sql: true
 jwt:
-  secret: 4C6F6E675365637265744B6579466F7243616D7075734F53323032364A5754546F6B656E536563726574
+  # RS256 — auth signs with the private key; gateway verifies with the public key.
+  # In prod, mount real keys and override these locations (e.g. file:/run/secrets/...).
+  private-key-location: ${JWT_PRIVATE_KEY_LOCATION:classpath:keys/private_key.pem}
+  public-key-location: ${JWT_PUBLIC_KEY_LOCATION:classpath:keys/public_key.pem}
   access-token-expiration: 3600000
   refresh-token-expiration: 604800000
-  
+
+app:
+  super-admin:
+    email: ${SUPER_ADMIN_EMAIL:superadmin@campusos.com}
+    password: ${SUPER_ADMIN_PASSWORD:ChangeMe@123}
+    full-name: ${SUPER_ADMIN_NAME:Super Admin}
+  # When true, createSchoolAdmin verifies the school via school-service (reject if missing/down).
+  # Off by default so admins can be provisioned before school-service exists.
+  validate-school: false
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
+
 eureka:
   client:
     service-url:

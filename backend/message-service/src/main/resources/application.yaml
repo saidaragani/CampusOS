@@ -2,27 +2,32 @@ server:
   port: 8086
 
 spring:
+  # Registered as "message-service" — other services' Feign clients resolve this name.
   application:
-    name: notification-service
-
+    name: message-service
 
   config:
     import: optional:configserver:http://localhost:8888
 
   datasource:
-    url: jdbc:mysql://localhost:3306/auth_db
-    username: root
-    password: prabhas
+    url: jdbc:mysql://localhost:3306/messaging_db?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:prabhas}
 
   jpa:
     hibernate:
       ddl-auto: update
-
     show-sql: true
-
     properties:
       hibernate:
         format_sql: true
+
+# Scheduled scans. Disable with app.scheduling.enabled=false.
+app:
+  scheduling:
+    enabled: ${SCHEDULING_ENABLED:true}
+    birthday-cron: ${BIRTHDAY_CRON:0 0 7 * * *}
+    festival-cron: ${FESTIVAL_CRON:0 30 7 * * *}
 
 eureka:
   client:

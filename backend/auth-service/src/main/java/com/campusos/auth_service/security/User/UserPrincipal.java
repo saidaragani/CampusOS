@@ -19,8 +19,9 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Prefix with ROLE_ so Spring's hasRole('X') (which prepends ROLE_) matches.
         return List.of(
-                new SimpleGrantedAuthority(user.getRole().getName().name())
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().getName().name())
         );
     }
 

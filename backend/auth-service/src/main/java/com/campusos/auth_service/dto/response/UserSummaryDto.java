@@ -1,7 +1,11 @@
 package com.campusos.auth_service.dto.response;
 
-import com.campusos.auth_service.entity.Role;
+import java.util.UUID;
 
 public record UserSummaryDto(
-        Long id, String email, String fullName, Role role, Long schoolId
+        UUID id,
+        String email,
+        String fullName,
+        String role,
+        UUID schoolId
 ) {}

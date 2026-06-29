@@ -34,8 +34,8 @@ public class ParentStudentLink extends BaseEntity {
     @Column(nullable = false)
     private UUID studentId;
 
-    @Column(nullable = false)
-    private Long schoolId;
+    @Column(name = "school_id", nullable = false)
+    private UUID schoolId;
 
     @Column(name = "admission_no", nullable = false, length = 40)
     private String admissionNo;

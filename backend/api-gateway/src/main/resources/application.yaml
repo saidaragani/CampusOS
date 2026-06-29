@@ -4,6 +4,51 @@ server:
 spring:
   application:
     name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            # Auth service — public auth endpoints + token/account management
+            - id: auth-service
+              uri: lb://auth-service
+              predicates:
+                - Path=/api/auth/**
+
+            # School service — schools, classes, teachers, students
+            # NOTE: /api/internal/** is intentionally NOT routed here.
+            - id: school-service
+              uri: lb://school-service
+              predicates:
+                - Path=/api/schools/**,/api/classes/**,/api/teachers/**,/api/students/**,/api/files/**
+
+            # Academic service — attendance, ratings, timetable, leaves, class-updates
+            - id: academic-service
+              uri: lb://academic-service
+              predicates:
+                - Path=/api/attendance/**,/api/ratings/**,/api/timetable/**,/api/leaves/**,/api/class-updates/**
+
+            # Calendar service — holidays, events, gallery, announcements
+            - id: calendar-service
+              uri: lb://calendar-service
+              predicates:
+                - Path=/api/holidays/**,/api/events/**,/api/gallery/**,/api/announcements/**
+
+            # Fee service — fee structure + student fees
+            - id: fee-service
+              uri: lb://fee-service
+              predicates:
+                - Path=/api/fees/**
+
+            # Messaging service — admin notification surface
+            - id: messaging-service
+              uri: lb://message-service
+              predicates:
+                - Path=/api/notifications/**
+
+# RS256 — gateway only VERIFIES tokens with the public key; auth-service signs.
+jwt:
+  public-key-location: ${JWT_PUBLIC_KEY_LOCATION:classpath:keys/public_key.pem}
 
 eureka:
   client:

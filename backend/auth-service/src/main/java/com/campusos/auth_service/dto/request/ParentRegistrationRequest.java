@@ -1,10 +1,17 @@
 package com.campusos.auth_service.dto.request;
 
+import com.campusos.common_lib.validation.StrongPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
+import java.util.UUID;
+
+/**
+ * Parent self-registration. The parent proves ownership of the child with the
+ * admission number printed on the admission slip; auth-service validates it
+ * against the student-service before creating the account + link.
+ */
 public record ParentRegistrationRequest(
         @NotBlank(message = "Full name is required")
         String fullName,
@@ -13,14 +20,14 @@ public record ParentRegistrationRequest(
         @Email(message = "Invalid email format")
         String email,
 
-        @NotBlank(message = "Password is required")
-        @Size(min = 8, message = "Password must be at least 8 characters long")
+        @StrongPassword
         String password,
 
-        @NotNull(message = "School ID is required")
-        Long schoolId,
+        String phone,
+
+        @NotNull(message = "School is required")
+        UUID schoolId,
 
         @NotBlank(message = "Admission number is required")
         String admissionNo
-) {
-}
+) {}

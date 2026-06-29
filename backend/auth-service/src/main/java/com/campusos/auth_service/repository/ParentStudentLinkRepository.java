@@ -13,6 +13,10 @@ public interface ParentStudentLinkRepository
 
     List<ParentStudentLink> findAllByParentUser(User parentUser);
 
+    List<ParentStudentLink> findByStudentId(UUID studentId);
+
+    List<ParentStudentLink> findBySchoolId(UUID schoolId);
+
     Optional<ParentStudentLink> findBySchoolIdAndAdmissionNo(
             UUID schoolId,
             String admissionNo

@@ -9,19 +9,26 @@ spring:
     import: optional:configserver:http://localhost:8888
 
   datasource:
-    url: jdbc:mysql://localhost:3306/auth_db
-    username: root
-    password: prabhas
+    url: jdbc:mysql://localhost:3306/academic_db?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:prabhas}
 
   jpa:
     hibernate:
       ddl-auto: update
-
     show-sql: true
-
     properties:
       hibernate:
         format_sql: true
+  cloud:
+    openfeign:
+      client:
+        config:
+          # Fail fast on a slow message-service so absentee emails never stall attendance.
+          message-service:
+            connect-timeout: 2000
+            read-timeout: 3000
+
 eureka:
   client:
     service-url:
