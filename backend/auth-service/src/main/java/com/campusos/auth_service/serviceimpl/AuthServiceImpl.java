@@ -8,6 +8,7 @@ import com.campusos.auth_service.dto.response.AuthResponse;
 import com.campusos.auth_service.dto.response.ChildView;
 import com.campusos.auth_service.dto.response.ParentContextResponse;
 import com.campusos.auth_service.dto.response.UserSummaryDto;
+import com.campusos.auth_service.repository.RefreshTokenRepository;
 import com.campusos.common_lib.contract.ChildLink;
 import com.campusos.common_lib.contract.RecipientContact;
 import com.campusos.common_lib.contract.PasswordResetNotification;
@@ -63,6 +64,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final ParentStudentLinkRepository parentStudentLinkRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private final RoleService roleService;
     private final RefreshTokenService refreshTokenService;
@@ -93,6 +95,7 @@ public class AuthServiceImpl implements AuthService {
 
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
         User user = principal.getUser();
+        refreshTokenRepository.deleteByUser(user);
 
         user.setLastLoginAt(LocalDateTime.now());
         userRepository.save(user);
@@ -130,7 +133,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void registerParent(ParentRegistrationRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new DuplicateResourceException("Email already in use");
+            throw new DuplicateResourceException("An account with this email address already exists.");
         }
 
         // Prove the admission number is real before creating anything.
@@ -167,7 +170,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public UserSummaryDto createSchoolAdmin(CreateAdminRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new DuplicateResourceException("Email already in use");
+            throw new DuplicateResourceException("An account with this email address already exists.");
         }
 
         if (validateSchool) {
@@ -196,7 +199,7 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Authenticated admin is not bound to a school.");
         }
         if (userRepository.existsByEmail(request.email())) {
-            throw new DuplicateResourceException("Email already in use");
+            throw new DuplicateResourceException("An account with this email address already exists.");
         }
 
         Role teacherRole = roleService.getByName(RoleType.TEACHER);
@@ -208,7 +211,9 @@ public class AuthServiceImpl implements AuthService {
                 .phone(request.phone())
                 .role(teacherRole)
                 .schoolId(callerSchoolId)
-                .teacherId(request.teacherId())
+                // The teacherId is no longer provided during user creation.
+                // This simplifies the API for the admin. The school-service can later
+                // create its own teacher profile and call back to link it to this user account.
                 .enabled(true)
                 .build();
 
@@ -296,15 +301,22 @@ public class AuthServiceImpl implements AuthService {
         User parent = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        StudentSummary student = validateAdmission(request.schoolId(), request.admissionNo());
+        UUID parentSchoolId = parent.getSchoolId();
+        if (parentSchoolId == null) {
+            // This case should ideally not happen if parent registration is enforced correctly.
+            throw new BadRequestException("Parent account is not associated with a school.");
+        }
 
-        if (parentStudentLinkRepository.existsBySchoolIdAndAdmissionNo(request.schoolId(), request.admissionNo())) {
+        // Use the parent's own school ID for validation, not one from the request.
+        StudentSummary student = validateAdmission(parentSchoolId, request.admissionNo());
+
+        if (parentStudentLinkRepository.existsBySchoolIdAndAdmissionNo(parentSchoolId, request.admissionNo())) {
             throw new DuplicateResourceException("This child has already been linked to a parent account.");
         }
 
         ParentStudentLink link = ParentStudentLink.builder()
                 .parentUser(parent)
-                .schoolId(request.schoolId())
+                .schoolId(parentSchoolId)
                 .studentId(student.studentId())
                 .admissionNo(request.admissionNo())
                 .build();

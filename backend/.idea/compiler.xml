@@ -19,8 +19,8 @@
         <module name="config-server" />
         <module name="academic-service" />
         <module name="calender-service" />
-        <module name="common-lib" />
         <module name="user-service" />
+        <module name="common-lib" />
         <module name="message-service" />
         <module name="school-service" />
         <module name="service-registry" />
@@ -40,6 +40,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="configserver" target="21" />
+      <module name="user-service" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
